@@ -1,45 +1,17 @@
 module Main exposing (..)
 
-
-import Html exposing (Html, div, text)
 import Html.App
+import Models exposing (..)
+import Messages exposing (Msg(..))
+import Update exposing (update)
+import Commands
+import View exposing (view)
 
-
--- Model
-
-
-type alias Model =
-    String
 
 init : ( Model, Cmd Msg )
 init =
-    ( "Hello", Cmd.none )
+    ( Models.new, Commands.nupnpSearch )
 
-
--- Messages
-
-
-type Msg
-    = NoOp
-
-
--- View
-
-
-view : Model -> Html Msg
-view model =
-    div []
-        [ text model ]
-
-
--- Update
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        NoOp ->
-            ( model, Cmd.none )
 
 
 -- Subscriptions
@@ -48,7 +20,8 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
-    
+
+
 
 -- Main
 
