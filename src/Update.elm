@@ -3,7 +3,7 @@ module Update exposing (..)
 import Messages exposing (Msg(..))
 import Auth.Update
 import Auth.Messages
-import Auth.Models exposing (defaultWithUserName)
+import Auth.Models
 import Models exposing (Model)
 import Commands
 
@@ -30,9 +30,9 @@ update msg model =
 handleAuthMessage : Auth.Messages.Msg -> Model -> ( Model, Cmd Msg )
 handleAuthMessage msg model =
     let
-        ( authInfo, cmd ) =
-            Auth.Update.update msg (defaultWithUserName model.userName)
+        ( authStatus, cmd ) =
+            Auth.Update.update msg model.authStatus
     in
-        ( { model | userName = authInfo.userName }
+        ( { model | authStatus = authStatus }
         , Cmd.map AuthMsg cmd
         )

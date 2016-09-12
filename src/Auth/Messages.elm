@@ -1,11 +1,12 @@
 module Auth.Messages exposing (..)
 
 import Http
+import Auth.Models exposing (Response)
 
 
 type Msg
-    = CreateUser String
-    | CreateUserSuccess String
+    = CreateUser String String
+    | CreateUserSuccess (Response String)
     | CreateUserFail Http.Error
     | DeleteUser String
     | DeleteUserSuccess

@@ -1,26 +1,46 @@
 module Auth.Update exposing (..)
 
 import Auth.Messages exposing (Msg(..))
-import Auth.Models exposing (AuthInfo)
+import Auth.Models exposing (AuthStatus(..), Response(..), Error, AuthError(..))
+import Auth.Commands as Commands
 
 
-update : Msg -> AuthInfo -> ( AuthInfo, Cmd Msg )
-update msg authInfo =
+update : Msg -> AuthStatus -> ( AuthStatus, Cmd Msg )
+update msg status =
     case msg of
-        CreateUser deviceType ->
-            ( { authInfo | deviceType = deviceType }, Cmd.none )
+        CreateUser ipAddress deviceType ->
+            ( status, Commands.createUser ipAddress deviceType )
 
-        CreateUserSuccess userName ->
-            ( { authInfo | userName = Just userName }, Cmd.none )
+        CreateUserSuccess response ->
+            case response of
+                ValidResponse userName ->
+                    Debug.log "valid create user response"
+                        ( AuthSuccess userName, Cmd.none )
+
+                ErrorsResponse errors ->
+                    Debug.log "bridge returned auth error"
+                        (handleCreateUserErrors errors)
 
         CreateUserFail error ->
-            ( { authInfo | userName = Nothing }, Cmd.none )
+            ( NeedAuth, Cmd.none )
 
         DeleteUser userName ->
-            ( authInfo, Cmd.none )
+            ( status, Cmd.none )
 
         DeleteUserSuccess ->
-            ( { authInfo | userName = Nothing }, Cmd.none )
+            ( NeedAuth, Cmd.none )
 
         DeleteUserFail error ->
-            ( authInfo, Cmd.none )
+            ( status, Cmd.none )
+
+
+handleCreateUserErrors : List Error -> ( AuthStatus, Cmd Msg )
+handleCreateUserErrors errors =
+    let
+        linkError =
+            List.any (\e -> e.type' == 101) errors
+    in
+        if linkError == True then
+            ( AuthFailure NeedPushLink, Cmd.none )
+        else
+            ( AuthFailure (AuthError errors), Cmd.none )

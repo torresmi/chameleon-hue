@@ -6,22 +6,24 @@ defaultDeviceType =
     "Chameleon-hue"
 
 
-type alias AuthInfo =
-    { deviceType : String
-    , userName : Maybe String
+type AuthStatus
+    = AuthSuccess String
+    | NeedAuth
+    | AuthFailure AuthError
+
+
+type AuthError
+    = NeedPushLink
+    | AuthError (List Error)
+
+
+type Response a
+    = ErrorsResponse (List Error)
+    | ValidResponse a
+
+
+type alias Error =
+    { type' : Int
+    , address : String
+    , description : String
     }
-
-
-newCustom : String -> AuthInfo
-newCustom deviceType =
-    AuthInfo deviceType Nothing
-
-
-newDefault : AuthInfo
-newDefault =
-    newCustom defaultDeviceType
-
-
-defaultWithUserName : Maybe String -> AuthInfo
-defaultWithUserName userName =
-    AuthInfo defaultDeviceType userName
