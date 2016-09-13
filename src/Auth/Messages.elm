@@ -9,5 +9,5 @@ type Msg
     | CreateUserSuccess (Response String)
     | CreateUserFail Http.Error
     | DeleteUser String
-    | DeleteUserSuccess
+    | DeleteUserSuccess (Response String)
     | DeleteUserFail Http.Error

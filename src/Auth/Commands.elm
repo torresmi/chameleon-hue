@@ -12,13 +12,37 @@ createUser : IpAddress -> String -> Cmd Msg
 createUser ipAddress deviceType =
     let
         url =
-            "http://" ++ ipAddress ++ "/api"
+            baseUrl ipAddress
 
         body deviceType =
             Http.string ("{\"devicetype\": \"" ++ deviceType ++ "\"}")
     in
-        Http.post userResponseDecoder url (body deviceType)
+        Http.post createUserResponseDecoder url (body deviceType)
             |> Task.perform CreateUserFail CreateUserSuccess
+
+
+deleteUser : IpAddress -> String -> Cmd Msg
+deleteUser ipAddress userName =
+    Http.fromJson deleteUserResponseDecoder
+        (Http.send
+            Http.defaultSettings
+            { verb = "DELETE"
+            , headers = [ jsonHeaderType ]
+            , url = (baseUrl ipAddress ++ "/" ++ userName ++ "/config/whitelist/" ++ userName)
+            , body = Http.empty
+            }
+        )
+        |> Task.perform DeleteUserFail DeleteUserSuccess
+
+
+jsonHeaderType : ( String, String )
+jsonHeaderType =
+    ( "Content-Type", "application/json" )
+
+
+baseUrl : IpAddress -> String
+baseUrl ipAddress =
+    "http://" ++ ipAddress ++ "/api"
 
 
 
@@ -33,14 +57,24 @@ responseDecoder responseDecoder =
         ]
 
 
-userDecoder : Decode.Decoder String
-userDecoder =
+createUserDecoder : Decode.Decoder String
+createUserDecoder =
     Decode.at [ "success", "deviceType" ] Decode.string
 
 
-userResponseDecoder : Decode.Decoder (Response String)
-userResponseDecoder =
-    responseDecoder userDecoder
+deleteUserDecoder : Decode.Decoder String
+deleteUserDecoder =
+    ("success" := Decode.string)
+
+
+createUserResponseDecoder : Decode.Decoder (Response String)
+createUserResponseDecoder =
+    responseDecoder createUserDecoder
+
+
+deleteUserResponseDecoder : Decode.Decoder (Response String)
+deleteUserResponseDecoder =
+    responseDecoder deleteUserDecoder
 
 
 errorDecoder : Decode.Decoder Error

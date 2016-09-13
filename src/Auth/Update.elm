@@ -14,12 +14,10 @@ update msg status =
         CreateUserSuccess response ->
             case response of
                 ValidResponse userName ->
-                    Debug.log "valid create user response"
-                        ( AuthSuccess userName, Cmd.none )
+                    ( AuthSuccess userName, Cmd.none )
 
                 ErrorsResponse errors ->
-                    Debug.log "bridge returned auth error"
-                        (handleCreateUserErrors errors)
+                    handleCreateUserErrors errors
 
         CreateUserFail error ->
             ( NeedAuth, Cmd.none )
@@ -27,8 +25,13 @@ update msg status =
         DeleteUser userName ->
             ( status, Cmd.none )
 
-        DeleteUserSuccess ->
-            ( NeedAuth, Cmd.none )
+        DeleteUserSuccess response ->
+            case response of
+                ValidResponse _ ->
+                    ( NeedAuth, Cmd.none )
+
+                ErrorsResponse _ ->
+                    ( status, Cmd.none )
 
         DeleteUserFail error ->
             ( status, Cmd.none )
