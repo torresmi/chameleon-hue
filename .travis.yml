@@ -1,4 +1,8 @@
-language: haskell
+language: node_js
+node_js:
+  - "4.4.7"
 install:
   - npm install -g elm
-  - elm-package install -y
+  - (cd tests && elm-package install -y)
+script:
+  - (cd tests && elm make src/Tests.elm --output tests.js && node tests.js)

@@ -1,4 +1,4 @@
-module Auth.Commands exposing (createUser)
+module Auth.Commands exposing (createUser, deleteUser, createUserResponseDecoder, deleteUserResponseDecoder)
 
 import Http
 import Json.Decode as Decode exposing ((:=))
@@ -57,24 +57,40 @@ responseDecoder responseDecoder =
         ]
 
 
-createUserDecoder : Decode.Decoder String
-createUserDecoder =
-    Decode.at [ "success", "deviceType" ] Decode.string
-
-
-deleteUserDecoder : Decode.Decoder String
-deleteUserDecoder =
-    ("success" := Decode.string)
+userSuccessDecoder : Decode.Decoder String
+userSuccessDecoder =
+    Decode.list (Decode.at [ "success", "username" ] Decode.string)
+        `Decode.andThen` takeFirst
 
 
 createUserResponseDecoder : Decode.Decoder (Response String)
 createUserResponseDecoder =
-    responseDecoder createUserDecoder
+    responseDecoder userSuccessDecoder
+
+
+userDeleteSuccess : Decode.Decoder String
+userDeleteSuccess =
+    Decode.list ("success" := Decode.string)
+        `Decode.andThen` takeFirst
+
+
+takeFirst : List a -> Decode.Decoder a
+takeFirst values =
+    let
+        head =
+            List.head values
+    in
+        case head of
+            Just value ->
+                Decode.succeed value
+
+            Nothing ->
+                Decode.fail "List was empty"
 
 
 deleteUserResponseDecoder : Decode.Decoder (Response String)
 deleteUserResponseDecoder =
-    responseDecoder deleteUserDecoder
+    responseDecoder userDeleteSuccess
 
 
 errorDecoder : Decode.Decoder Error
