@@ -4,3 +4,5 @@ elm-stuff/
 repl-temp-*
 node_modules
 elm.js
+tests/tests.js
+.vscode/
