@@ -1,0 +1,25 @@
+{
+  "name": "chameleon-hue",
+  "version": "0.1.0",
+  "description": "Application to control Hue lights",
+  "main": "main.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "elm-test": "^0.16.1-alpha4"
+  },
+  "devDependencies": {},
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/torresmi/chameleon-hue.git"
+  },
+  "author": "Michael Torres",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/torresmi/chameleon-hue/issues"
+  },
+  "homepage": "https://github.com/torresmi/chameleon-hue#readme"
+}
