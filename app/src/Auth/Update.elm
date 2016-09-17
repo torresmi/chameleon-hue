@@ -3,6 +3,8 @@ module Auth.Update exposing (..)
 import Auth.Messages exposing (Msg(..))
 import Auth.Models exposing (AuthStatus(..), Response(..), Error, AuthError(..))
 import Auth.Commands as Commands
+import Routing
+import Navigation
 
 
 update : Msg -> AuthStatus -> ( AuthStatus, Cmd Msg )
@@ -14,7 +16,7 @@ update msg status =
         CreateUserSuccess response ->
             case response of
                 ValidResponse userName ->
-                    ( AuthSuccess userName, Cmd.none )
+                    ( AuthSuccess userName, Navigation.newUrl (Routing.fragment Routing.mainNav) )
 
                 ErrorsResponse errors ->
                     handleCreateUserErrors errors
