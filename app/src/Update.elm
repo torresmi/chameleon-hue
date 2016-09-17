@@ -38,6 +38,15 @@ update msg model =
         SelectTab index ->
             ( { model | selectedTab = index }, Cmd.none )
 
+        StoredUserName userName ->
+            case userName of
+                Just name ->
+                    ( { model | authStatus = Auth.Models.AuthSuccess name, route = Routing.MainNavRoute }, Navigation.newUrl (Routing.fragment Routing.mainNav) )
+
+                Nothing ->
+                    Debug.log "stored username not set"
+                        ( { model | authStatus = Auth.Models.NeedAuth, route = Routing.SettingsRoute }, Cmd.none )
+
 
 handleAuthMessage : Auth.Messages.Msg -> Model -> ( Model, Cmd Msg )
 handleAuthMessage msg model =

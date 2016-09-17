@@ -5,6 +5,7 @@ import Auth.Models exposing (AuthStatus(..), Response(..), Error, AuthError(..))
 import Auth.Commands as Commands
 import Routing
 import Navigation
+import Ports
 
 
 update : Msg -> AuthStatus -> ( AuthStatus, Cmd Msg )
@@ -16,7 +17,12 @@ update msg status =
         CreateUserSuccess response ->
             case response of
                 ValidResponse userName ->
-                    ( AuthSuccess userName, Navigation.newUrl (Routing.fragment Routing.mainNav) )
+                    ( AuthSuccess userName
+                    , Cmd.batch
+                        [ Ports.storage userName
+                        , Navigation.newUrl (Routing.fragment Routing.mainNav)
+                        ]
+                    )
 
                 ErrorsResponse errors ->
                     handleCreateUserErrors errors

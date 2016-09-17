@@ -14,3 +14,4 @@ type Msg
     | Mdl (Material.Msg Msg)
     | SelectSettings
     | SelectTab Int
+    | StoredUserName (Maybe String)

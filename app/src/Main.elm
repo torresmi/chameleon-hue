@@ -8,6 +8,7 @@ import View exposing (view)
 import Material
 import Routing
 import Navigation
+import Ports
 
 
 init : Result String Routing.Route -> ( Model, Cmd Msg )
@@ -40,7 +41,10 @@ urlUpdate result model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Material.subscriptions Mdl model
+    Sub.batch
+        [ Ports.storageInput StoredUserName
+        , Material.subscriptions Mdl model
+        ]
 
 
 
