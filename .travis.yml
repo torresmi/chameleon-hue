@@ -5,4 +5,4 @@ install:
   - npm install -g elm
   - (cd tests && elm-package install -y)
 script:
-  - (cd tests && elm make src/Tests.elm --output tests.js && node tests.js)
+  - (cd tests && elm make src/Tests.elm --output tests.js && node -r ./scripts/workaround-elm-test-and-navigation tests.js)

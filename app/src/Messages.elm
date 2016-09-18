@@ -3,6 +3,7 @@ module Messages exposing (..)
 import Auth.Messages exposing (Msg(..))
 import Models exposing (IpAddress)
 import Http
+import Material
 
 
 type Msg
@@ -10,3 +11,7 @@ type Msg
     | GetIpAddress
     | IpAddressSuccess (Maybe IpAddress)
     | IpAddressFail Http.Error
+    | Mdl (Material.Msg Msg)
+    | SelectSettings
+    | SelectTab Int
+    | StoredUserName (Maybe String)
