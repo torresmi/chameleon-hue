@@ -1,0 +1,1 @@
+global.document = global.window = {}; // work around for Elm Navigation https://github.com/elm-lang/navigation/issues/7
