@@ -1,38 +1,10 @@
-module Auth.Commands exposing (createUser, deleteUser, createUserResponseDecoder, deleteUserResponseDecoder)
+module Auth.Commands exposing (..)
 
 import Http
 import Json.Decode as Decode exposing ((:=))
 import Task exposing (Task)
-import Auth.Messages exposing (Msg(..))
-import Auth.Models exposing (Error, Response(..))
 import Models exposing (IpAddress)
-
-
-createUser : IpAddress -> String -> Cmd Msg
-createUser ipAddress deviceType =
-    let
-        url =
-            baseUrl ipAddress
-
-        body deviceType =
-            Http.string ("{\"devicetype\": \"" ++ deviceType ++ "\"}")
-    in
-        Http.post createUserResponseDecoder url (body deviceType)
-            |> Task.perform CreateUserFail CreateUserSuccess
-
-
-deleteUser : IpAddress -> String -> Cmd Msg
-deleteUser ipAddress userName =
-    Http.fromJson deleteUserResponseDecoder
-        (Http.send
-            Http.defaultSettings
-            { verb = "DELETE"
-            , headers = [ jsonHeaderType ]
-            , url = (baseUrl ipAddress ++ "/" ++ userName ++ "/config/whitelist/" ++ userName)
-            , body = Http.empty
-            }
-        )
-        |> Task.perform DeleteUserFail DeleteUserSuccess
+import Auth.Models exposing (Error, Response(..))
 
 
 jsonHeaderType : ( String, String )
@@ -43,35 +15,6 @@ jsonHeaderType =
 baseUrl : IpAddress -> String
 baseUrl ipAddress =
     "http://" ++ ipAddress ++ "/api"
-
-
-
--- Decoding
-
-
-responseDecoder : Decode.Decoder a -> Decode.Decoder (Response a)
-responseDecoder responseDecoder =
-    Decode.oneOf
-        [ Decode.map ValidResponse responseDecoder
-        , Decode.map ErrorsResponse errorsDecoder
-        ]
-
-
-userSuccessDecoder : Decode.Decoder String
-userSuccessDecoder =
-    Decode.list (Decode.at [ "success", "username" ] Decode.string)
-        `Decode.andThen` takeFirst
-
-
-createUserResponseDecoder : Decode.Decoder (Response String)
-createUserResponseDecoder =
-    responseDecoder userSuccessDecoder
-
-
-userDeleteSuccess : Decode.Decoder String
-userDeleteSuccess =
-    Decode.list ("success" := Decode.string)
-        `Decode.andThen` takeFirst
 
 
 takeFirst : List a -> Decode.Decoder a
@@ -88,9 +31,12 @@ takeFirst values =
                 Decode.fail "List was empty"
 
 
-deleteUserResponseDecoder : Decode.Decoder (Response String)
-deleteUserResponseDecoder =
-    responseDecoder userDeleteSuccess
+responseDecoder : Decode.Decoder a -> Decode.Decoder (Response a)
+responseDecoder responseDecoder =
+    Decode.oneOf
+        [ Decode.map ValidResponse responseDecoder
+        , Decode.map ErrorsResponse errorsDecoder
+        ]
 
 
 errorDecoder : Decode.Decoder Error

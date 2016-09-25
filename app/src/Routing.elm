@@ -1,37 +1,54 @@
-module Routing exposing (..)
+module Routing exposing (Route(..), toHash, routeFromResult, parser)
 
 import Navigation
 import UrlParser exposing (format)
 import String
+import App.Routing as AppRouter
 
 
 type Route
-    = SettingsRoute
-    | MainNavRoute
-    | NotFoundRoute
+    = Login
+    | App AppRouter.Route
+    | NotFound
 
 
-settings : String
-settings =
-    "settings"
+login : String
+login =
+    "login"
 
 
-mainNav : String
-mainNav =
-    ""
+notFound : String
+notFound =
+    "notfound"
 
 
-fragment : String -> String
-fragment route =
-    "#" ++ route
+toHash : Route -> String
+toHash route =
+    case route of
+        Login ->
+            "#" ++ login
+
+        App subRoute ->
+            AppRouter.toHash subRoute
+
+        NotFound ->
+            "#" ++ notFound
 
 
 matchers : UrlParser.Parser (Route -> a) a
 matchers =
-    UrlParser.oneOf
-        [ format SettingsRoute (UrlParser.s settings)
-        , format MainNavRoute (UrlParser.s mainNav)
-        ]
+    let
+        appParsers =
+            List.map
+                (\( subType, parser ) ->
+                    format (App subType) parser
+                )
+                AppRouter.parsers
+
+        allParsers =
+            format Login (UrlParser.s login) :: appParsers
+    in
+        UrlParser.oneOf allParsers
 
 
 hashParser : Navigation.Location -> Result String Route
@@ -53,4 +70,4 @@ routeFromResult result =
             route
 
         Err string ->
-            NotFoundRoute
+            NotFound
