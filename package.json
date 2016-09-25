@@ -11,6 +11,9 @@
   },
   "devDependencies": {},
   "scripts": {
+      "elm" : "elm make app/src/Main.elm --output elm.js || true",
+      "run" : "electron app/main.js",
+      "start" : "npm run elm & npm run run"
   },
   "repository": {
     "type": "git",
