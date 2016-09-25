@@ -1,4 +1,4 @@
-module Auth.CreateUser exposing (Msg(..), update, view)
+module Auth.CreateUser exposing (Msg(..), update, view, createUserResponseDecoder)
 
 import Models exposing (AuthContext, IpStatus(..))
 import Auth.Models exposing (AuthStatus(..), AuthError(..), Response(..))

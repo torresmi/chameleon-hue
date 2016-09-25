@@ -1,4 +1,4 @@
-module Auth.DeleteUser exposing (Msg(..), update, view)
+module Auth.DeleteUser exposing (Msg(..), update, view, deleteUserResponseDecoder)
 
 import Models exposing (AuthContext, IpStatus(..), IpAddress)
 import Auth.Models exposing (AuthStatus(..), AuthError(..), Response(..))
