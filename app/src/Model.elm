@@ -1,25 +1,18 @@
-module Models exposing (..)
+module Model exposing (Model, new)
 
 import Hue
 import Http
-import Auth.Models
+import Auth.Types
 import Material
 import Routing
-
-
-type alias IpAddress =
-    String
-
-
-type alias Mdl =
-    Material.Model
+import Types
 
 
 type alias Model =
     { bridgeRef : Maybe Hue.BridgeReference
-    , ipAddress : Maybe IpAddress
+    , ipAddress : Maybe Types.IpAddress
     , ipAddressError : Maybe Http.Error
-    , authStatus : Auth.Models.AuthStatus
+    , authStatus : Auth.Types.AuthStatus
     , mdl : Material.Model
     , selectedTab : Int
     , route : Routing.Route
@@ -32,7 +25,7 @@ new route =
         Nothing
         Nothing
         Nothing
-        Auth.Models.NeedAuth
+        Auth.Types.NeedAuth
         Material.model
         0
         route

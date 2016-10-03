@@ -3,8 +3,8 @@ module Update exposing (..)
 import Messages exposing (Msg(..))
 import Auth.Update
 import Auth.Messages
-import Auth.Models
-import Models exposing (Model)
+import Auth.Types
+import Model exposing (Model)
 import Commands
 import Material
 import Routing
@@ -15,7 +15,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         AuthMsg subMsg ->
-            handleAuthMessage subMsg model
+            updateAuthMessage subMsg model
 
         GetIpAddress ->
             ( model, Commands.nupnpSearch )
@@ -41,15 +41,15 @@ update msg model =
         StoredUserName userName ->
             case userName of
                 Just name ->
-                    ( { model | authStatus = Auth.Models.AuthSuccess name, route = Routing.MainNavRoute }, Navigation.newUrl (Routing.fragment Routing.mainNav) )
+                    ( { model | authStatus = Auth.Types.AuthSuccess name, route = Routing.MainNavRoute }, Navigation.newUrl (Routing.fragment Routing.mainNav) )
 
                 Nothing ->
                     Debug.log "stored username not set"
-                        ( { model | authStatus = Auth.Models.NeedAuth, route = Routing.SettingsRoute }, Cmd.none )
+                        ( { model | authStatus = Auth.Types.NeedAuth, route = Routing.SettingsRoute }, Cmd.none )
 
 
-handleAuthMessage : Auth.Messages.Msg -> Model -> ( Model, Cmd Msg )
-handleAuthMessage msg model =
+updateAuthMessage : Auth.Messages.Msg -> Model -> ( Model, Cmd Msg )
+updateAuthMessage msg model =
     let
         ( authStatus, cmd ) =
             Auth.Update.update msg model.authStatus

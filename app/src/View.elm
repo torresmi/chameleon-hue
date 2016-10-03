@@ -1,13 +1,14 @@
 module View exposing (..)
 
-import Models exposing (Model, IpAddress)
+import Types exposing (IpAddress)
 import Html as Html exposing (Html, div, text)
 import Html.App as App
 import Html.Events
 import Html.Attributes exposing (href, class, style, id)
 import Messages exposing (Msg(..))
 import Auth.Views exposing (view)
-import Auth.Models
+import Auth.Types
+import Model exposing (Model)
 import Material
 import Material.Scheme
 import Material.Color as Color
@@ -104,7 +105,7 @@ page : Model -> Html Msg
 page model =
     let
         needAuth =
-            model.authStatus == Auth.Models.NeedAuth
+            model.authStatus == Auth.Types.NeedAuth
     in
         case ( model.route, needAuth ) of
             ( SettingsRoute, _ ) ->

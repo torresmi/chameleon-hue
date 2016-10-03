@@ -4,8 +4,8 @@ import Http
 import Json.Decode as Decode exposing ((:=))
 import Task exposing (Task)
 import Auth.Messages exposing (Msg(..))
-import Auth.Models exposing (Error, Response(..))
-import Models exposing (IpAddress)
+import Auth.Types exposing (Error, Response(..))
+import Types exposing (IpAddress)
 
 
 createUser : IpAddress -> String -> Cmd Msg
@@ -21,7 +21,7 @@ createUser ipAddress deviceType =
             |> Task.perform CreateUserFail CreateUserSuccess
 
 
-deleteUser : IpAddress -> String -> Cmd Msg
+deleteUser : IpAddress -> Types.Username -> Cmd Msg
 deleteUser ipAddress userName =
     Http.fromJson deleteUserResponseDecoder
         (Http.send

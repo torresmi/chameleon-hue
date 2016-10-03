@@ -1,7 +1,7 @@
 module Auth.Messages exposing (..)
 
 import Http
-import Auth.Models exposing (Response)
+import Auth.Types exposing (Response)
 
 
 type Msg

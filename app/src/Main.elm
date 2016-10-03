@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Models exposing (..)
+import Model exposing (Model)
 import Messages exposing (Msg(..))
 import Update exposing (update)
 import Commands
@@ -23,7 +23,7 @@ init result =
         currentRoute =
             Routing.routeFromResult result
     in
-        ( Models.new currentRoute, commands )
+        ( Model.new currentRoute, commands )
 
 
 urlUpdate : Result String Routing.Route -> Model -> ( Model, Cmd Msg )

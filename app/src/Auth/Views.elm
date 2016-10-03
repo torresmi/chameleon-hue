@@ -1,7 +1,7 @@
 module Auth.Views exposing (view)
 
-import Models exposing (IpAddress)
-import Auth.Models exposing (AuthStatus(..), AuthError(..))
+import Types exposing (IpAddress)
+import Auth.Types exposing (AuthStatus(..), AuthError(..))
 import Html as Html exposing (Html)
 import Html.Events exposing (..)
 import Auth.Messages exposing (Msg(..))
@@ -19,7 +19,7 @@ showCreateUser ipAddress status =
             case status of
                 NeedAuth ->
                     Html.button
-                        [ onClick (CreateUser ip Auth.Models.defaultDeviceType) ]
+                        [ onClick (CreateUser ip Auth.Types.defaultDeviceType) ]
                         [ Html.text "Create User" ]
 
                 AuthSuccess userName ->

@@ -1,7 +1,7 @@
 module Auth.Update exposing (..)
 
 import Auth.Messages exposing (Msg(..))
-import Auth.Models exposing (AuthStatus(..), Response(..), Error, AuthError(..))
+import Auth.Types exposing (AuthStatus(..), Response(..), Error, AuthError(..))
 import Auth.Commands as Commands
 import Routing
 import Navigation

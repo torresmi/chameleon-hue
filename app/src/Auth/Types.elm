@@ -1,4 +1,4 @@
-module Auth.Models exposing (..)
+module Auth.Types exposing (..)
 
 
 defaultDeviceType : String
