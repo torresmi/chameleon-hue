@@ -1,10 +1,10 @@
-module Models exposing (Model, IpAddress, IpStatus(..), new, Mdl, AuthContext, BridgeRefContext)
+module Models exposing (..)
 
-import App.Models
-import Routing
+import Hue
 import Http
-import Material
 import Auth.Models
+import Material
+import Routing
 
 
 type alias IpAddress =
@@ -15,48 +15,24 @@ type alias Mdl =
     Material.Model
 
 
-type IpStatus
-    = Ip IpAddress
-    | IpNotAvailable
-    | IpLoading
-    | IpError Http.Error
-
-
-type alias AuthContext =
-    { ipStatus : IpStatus
-    , authStatus : Auth.Models.AuthStatus
-    }
-
-
-type alias BridgeRefContext =
-    { ipStatus : IpStatus
-    , userName : String
-    }
-
-
 type alias Model =
-    { appModel : App.Models.Model
-    , mdl : Material.Model
-    , ipStatus : IpStatus
+    { bridgeRef : Maybe Hue.BridgeReference
+    , ipAddress : Maybe IpAddress
+    , ipAddressError : Maybe Http.Error
     , authStatus : Auth.Models.AuthStatus
+    , mdl : Material.Model
+    , selectedTab : Int
     , route : Routing.Route
     }
 
 
 new : Routing.Route -> Model
 new route =
-    let
-        appModel =
-            case route of
-                Routing.App subRoute ->
-                    App.Models.newWithRoute subRoute
-
-                _ ->
-                    App.Models.new
-    in
-        { appModel = appModel
-        , mdl = Material.model
-        , ipStatus = IpLoading
-        , authStatus = Auth.Models.NeedAuth
-        , route = route
-        }
+    Model
+        Nothing
+        Nothing
+        Nothing
+        Auth.Models.NeedAuth
+        Material.model
+        0
+        route
