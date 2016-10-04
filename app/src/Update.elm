@@ -1,103 +1,59 @@
-module Update exposing (update)
+module Update exposing (..)
 
 import Messages exposing (Msg(..))
-import App.Messages
-import Models exposing (IpStatus(..))
-import Auth.Models
-import App.Update
-import Navigation
-import Routing
-import App.Routing
+import Auth.Update
+import Auth.Messages
+import Auth.Types
+import Model exposing (Model)
 import Commands
 import Material
-import Auth.CreateUser
-import Auth.DeleteUser
+import Routing
+import Navigation
 
 
-update : Messages.Msg -> Models.Model -> ( Models.Model, Cmd Messages.Msg )
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        App subMsg ->
-            handleAppMessage subMsg model
-
-        StoredUserName userName ->
-            handleSavedUserName userName model
+        AuthMsg subMsg ->
+            updateAuthMessage subMsg model
 
         GetIpAddress ->
             ( model, Commands.nupnpSearch )
 
         IpAddressSuccess (Just ip) ->
-            ( { model | ipStatus = Ip ip }, Cmd.none )
+            ( { model | ipAddress = Just ip }, Cmd.none )
 
         IpAddressSuccess Nothing ->
-            ( { model | ipStatus = IpNotAvailable }, Cmd.none )
+            ( { model | ipAddress = Nothing }, Cmd.none )
 
         IpAddressFail error ->
-            ( { model | ipStatus = IpError error }, Cmd.none )
+            ( { model | ipAddress = Nothing, ipAddressError = Just error }, Cmd.none )
 
         Mdl subMsg ->
             Material.update subMsg model
 
-        CreateUser subMsg ->
-            handleCreateUser model subMsg
+        SelectSettings ->
+            ( { model | route = Routing.SettingsRoute }, Navigation.newUrl (Routing.fragment Routing.settings) )
 
-        DeleteUser subMsg ->
-            handleDeleteUser model subMsg
+        SelectTab index ->
+            ( { model | selectedTab = index }, Cmd.none )
 
+        StoredUserName userName ->
+            case userName of
+                Just name ->
+                    ( { model | authStatus = Auth.Types.AuthSuccess name, route = Routing.MainNavRoute }, Navigation.newUrl (Routing.fragment Routing.mainNav) )
 
-handleAppMessage : App.Messages.Msg -> Models.Model -> ( Models.Model, Cmd Messages.Msg )
-handleAppMessage msg model =
-    case model.authStatus of
-        Auth.Models.AuthSuccess userName ->
-            let
-                context =
-                    Models.BridgeRefContext model.ipStatus userName
-
-                ( subModel, subCmd ) =
-                    App.Update.update msg context model.appModel
-            in
-                ( { model | appModel = subModel }
-                , Cmd.map App subCmd
-                )
-
-        _ ->
-            Debug.log ("Message sent to App when not logged in" ++ toString msg)
-                ( model, Cmd.none )
+                Nothing ->
+                    Debug.log "stored username not set"
+                        ( { model | authStatus = Auth.Types.NeedAuth, route = Routing.SettingsRoute }, Cmd.none )
 
 
-handleSavedUserName : Maybe String -> Models.Model -> ( Models.Model, Cmd Messages.Msg )
-handleSavedUserName userName model =
-    case Debug.log "Username : " userName of
-        Just name ->
-            ( { model | authStatus = Auth.Models.AuthSuccess name }, Navigation.newUrl (Routing.toHash (Routing.App App.Routing.MainNav)) )
-
-        Nothing ->
-            ( { model | authStatus = Auth.Models.NeedAuth }, Cmd.none )
-
-
-handleCreateUser : Models.Model -> Auth.CreateUser.Msg -> ( Models.Model, Cmd Messages.Msg )
-handleCreateUser model msg =
+updateAuthMessage : Auth.Messages.Msg -> Model -> ( Model, Cmd Msg )
+updateAuthMessage msg model =
     let
-        context =
-            Models.AuthContext model.ipStatus model.authStatus
-
         ( authStatus, cmd ) =
-            Auth.CreateUser.update context msg
+            Auth.Update.update msg model.authStatus
     in
         ( { model | authStatus = authStatus }
-        , Cmd.map Messages.CreateUser cmd
-        )
-
-
-handleDeleteUser : Models.Model -> Auth.DeleteUser.Msg -> ( Models.Model, Cmd Messages.Msg )
-handleDeleteUser model msg =
-    let
-        context =
-            Models.AuthContext model.ipStatus model.authStatus
-
-        ( authStatus, cmd ) =
-            Auth.DeleteUser.update context msg
-    in
-        ( { model | authStatus = authStatus }
-        , Cmd.map Messages.DeleteUser cmd
+        , Cmd.map AuthMsg cmd
         )

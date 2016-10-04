@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Models
+import Model exposing (Model)
 import Messages exposing (Msg(..))
 import Update exposing (update)
 import Commands
@@ -11,8 +11,8 @@ import Navigation
 import Ports
 
 
-init : Result String Routing.Route -> ( Models.Model, Cmd Msg )
-init route =
+init : Result String Routing.Route -> ( Model, Cmd Msg )
+init result =
     let
         commands =
             Cmd.batch
@@ -21,29 +21,29 @@ init route =
                 ]
 
         currentRoute =
-            Routing.routeFromResult route
-    in
-        ( Models.new currentRoute, commands )
-
-
-urlUpdate : Result String Routing.Route -> Models.Model -> ( Models.Model, Cmd Msg )
-urlUpdate result model =
-    let
-        desiredRoute =
             Routing.routeFromResult result
     in
-        ( { model | route = desiredRoute }, Cmd.none )
+        ( Model.new currentRoute, commands )
+
+
+urlUpdate : Result String Routing.Route -> Model -> ( Model, Cmd Msg )
+urlUpdate result model =
+    let
+        currentRoute =
+            Routing.routeFromResult result
+    in
+        ( { model | route = currentRoute }, Cmd.none )
 
 
 
 -- Subscriptions
 
 
-subscriptions : Models.Model -> Sub Msg
+subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ Ports.storageInput StoredUserName
-        , Material.subscriptions Messages.Mdl model
+        , Material.subscriptions Mdl model
         ]
 
 

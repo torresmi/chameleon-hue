@@ -1,4 +1,9 @@
-module Auth.Models exposing (..)
+module Auth.Types exposing (..)
+
+
+defaultDeviceType : String
+defaultDeviceType =
+    "Chameleon-hue"
 
 
 type AuthStatus
@@ -22,8 +27,3 @@ type alias Error =
     , address : String
     , description : String
     }
-
-
-defaultDeviceType : String
-defaultDeviceType =
-    "Chameleon-hue"

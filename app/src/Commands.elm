@@ -4,7 +4,7 @@ import Http
 import Json.Decode as Decode exposing ((:=))
 import Task exposing (Task)
 import Messages exposing (Msg(..))
-import Models exposing (IpAddress)
+import Types exposing (IpAddress)
 
 
 nupnpUrl : String

@@ -1,19 +1,17 @@
 module Messages exposing (Msg(..))
 
-import App.Messages
-import Models exposing (IpAddress)
+import Auth.Messages
+import Types
 import Http
 import Material
-import Auth.CreateUser
-import Auth.DeleteUser
 
 
 type Msg
-    = StoredUserName (Maybe String)
-    | Mdl (Material.Msg Msg)
-    | App App.Messages.Msg
-    | CreateUser Auth.CreateUser.Msg
-    | DeleteUser Auth.DeleteUser.Msg
+    = AuthMsg Auth.Messages.Msg
     | GetIpAddress
-    | IpAddressSuccess (Maybe IpAddress)
+    | IpAddressSuccess (Maybe Types.IpAddress)
     | IpAddressFail Http.Error
+    | Mdl (Material.Msg Msg)
+    | SelectSettings
+    | SelectTab Int
+    | StoredUserName (Maybe Types.Username)

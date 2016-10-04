@@ -1,13 +1,21 @@
-module View exposing (view)
+module View exposing (..)
 
-import Models exposing (Model)
+import Types exposing (IpAddress)
+import Html as Html exposing (Html, div, text)
+import Html.App as App
+import Html.Events
+import Html.Attributes exposing (href, class, style, id)
 import Messages exposing (Msg(..))
-import Html exposing (Html, div, text)
-import Html.App
-import Auth.Models as AuthModel
+import Auth.Views exposing (view)
+import Auth.Types
+import Model exposing (Model)
+import Material
+import Material.Scheme
+import Material.Color as Color
+import Material.Layout as Layout
+import Material.Options as Options
+import Material.Menu as Menu
 import Routing exposing (Route(..))
-import App.View
-import Auth.CreateUser
 
 
 view : Model -> Html Msg
@@ -17,37 +25,100 @@ view model =
         [ page model ]
 
 
+mainNavView : Model -> Html Msg
+mainNavView model =
+    --TODO: Just for prototyping. Add css manually
+    Material.Scheme.topWithScheme Color.DeepPurple Color.Cyan <|
+        Layout.render Mdl
+            model.mdl
+            [ Layout.waterfall False
+            , Layout.fixedHeader
+            , Layout.selectedTab model.selectedTab
+            , Layout.onSelectTab SelectTab
+            ]
+            { header = header model
+            , drawer = []
+            , tabs = (tabs mainTabTitles model)
+            , main = [ settingsView model ]
+            }
+
+
+header : Model -> List (Html Msg)
+header model =
+    [ Layout.row
+        []
+        [ Layout.title [] [ text title ]
+        , Layout.spacer
+        , Menu.render Mdl
+            [ settingsIndex ]
+            model.mdl
+            [ Menu.bottomRight
+            , Menu.ripple
+            , Options.css "margin-bottom" "2px"
+            ]
+            [ Menu.item
+                [ Menu.onSelect SelectSettings ]
+                [ text "Settings" ]
+            ]
+        ]
+    ]
+
+
+settingsIndex : Int
+settingsIndex =
+    0
+
+
+settingsView : Model -> Html Msg
+settingsView model =
+    App.map AuthMsg (Auth.Views.view model.ipAddress model.authStatus)
+
+
+title : String
+title =
+    "Hue"
+
+
+mainTabTitles : List String
+mainTabTitles =
+    [ "Lights"
+    ]
+
+
+tabs : List String -> Model -> ( List (Html Msg), List (Options.Style Msg) )
+tabs titles model =
+    let
+        tabTitles =
+            List.map
+                (\title ->
+                    Options.span [] [ text title ]
+                )
+                titles
+
+        tabOptions =
+            []
+    in
+        ( tabTitles, tabOptions )
+
+
 page : Model -> Html Msg
 page model =
     let
         needAuth =
-            model.authStatus == AuthModel.NeedAuth
-
-        showHueView =
-            Html.App.map Messages.App (App.View.view model.appModel)
-
-        showCreateUserView =
-            let
-                context =
-                    Models.AuthContext model.ipStatus model.authStatus
-            in
-                Html.App.map CreateUser (Auth.CreateUser.view context)
+            model.authStatus == Auth.Types.NeedAuth
     in
         case ( model.route, needAuth ) of
-            ( Login, False ) ->
-                showHueView
+            ( SettingsRoute, _ ) ->
+                settingsView model
 
-            ( Login, True ) ->
-                showCreateUserView
+            ( MainNavRoute, False ) ->
+                mainNavView model
 
-            ( NotFound, _ ) ->
+            ( MainNavRoute, True ) ->
+                settingsView model
+
+            ( NotFoundRoute, _ ) ->
                 notFoundView
-
-            ( Routing.App _, True ) ->
-                showCreateUserView
-
-            ( Routing.App _, False ) ->
-                showHueView
 
 
 notFoundView : Html Msg
